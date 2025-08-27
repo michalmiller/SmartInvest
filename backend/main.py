@@ -1,4 +1,4 @@
-from backend.routers import auth, search, ask, portfolio, invest
+from routers import auth, search, ask, portfolio, invest
 from fastapi import FastAPI
 
 app = FastAPI()
