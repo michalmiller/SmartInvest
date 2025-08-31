@@ -52,15 +52,27 @@ class InvestInputTab(QWidget):
                 "category": self.category_input.text().strip()
             }
 
-            res = requests.post("http://localhost:8000/invest/", json=data)
+            # שליחה ל-Somee במקום localhost
+            res = requests.post(
+                "http://michalmiller.somee.com/api.php",
+                json=data,
+                headers={'Content-Type': 'application/json'}
+            )
+
             if res.status_code == 200:
+                response_data = res.json()
                 QMessageBox.information(self, "הצלחה", "✅ ההשקעה נשמרה בהצלחה!")
                 self.clear_fields()
             else:
-                QMessageBox.critical(self, "שגיאה", f"שגיאה בשמירה: {res.status_code}")
+                error_msg = res.text if res.text else f"שגיאה {res.status_code}"
+                QMessageBox.critical(self, "שגיאה", f"שגיאה בשמירה: {error_msg}")
+
+        except ValueError:
+            QMessageBox.critical(self, "שגיאה", "אנא הכנס סכום תקין")
+        except requests.exceptions.RequestException as e:
+            QMessageBox.critical(self, "שגיאת רשת", f"בעיה בחיבור לשרת: {str(e)}")
         except Exception as e:
             QMessageBox.critical(self, "שגיאה", f"שגיאה: {str(e)}")
-
     def clear_fields(self):
         self.asset_input.clear()
         self.amount_input.clear()

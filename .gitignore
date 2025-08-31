@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.exe
+*.dll
+*.log
+.env
+.venv/
+env/
+node_modules/
+dist/
+build/
