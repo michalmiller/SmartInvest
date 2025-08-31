@@ -1,70 +1,51 @@
-from fastapi import APIRouter, Body
-import os
-import json
-from datetime import datetime
+from fastapi import APIRouter, HTTPException
+from typing import Any, Dict, List
+from somee_client import save_json, load_json  # קובץ השירות שלך ל-Somee
 
 router = APIRouter()
-
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../investments.json")
+KEY = "investments"  # ישמר כ-investments.json ב-Somee
 
 @router.post("/")
-def add_investment(data: dict = Body(...)):
-    data["timestamp"] = datetime.now().isoformat()  # הוספת תאריך ושעה
-
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            existing = json.load(f)
-    else:
-        existing = []
-
-    existing.append(data)
-
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(existing, f, ensure_ascii=False, indent=2)
-
-    return {"status": "saved", "investment": data}
-
-@router.get("/summary/")
-def investment_summary():
-    if not os.path.exists(DATA_FILE):
-        return {"summary": {}}
-
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    summary = {}
-    for item in data:
-        cat = item.get("category", "Other")
-        summary[cat] = summary.get(cat, 0) + 1
-
-    return {"summary": summary}
+def add_investment(data: Dict[str, Any]):
+    try:
+        cur: List[Dict[str, Any]] = load_json(KEY) or []
+        if not isinstance(cur, list):
+            cur = []
+        cur.append(data)
+        save_json(KEY, cur)
+        return {"status": "saved", "investment": data}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")
 
 @router.get("/")
 def get_all_investments():
-    if not os.path.exists(DATA_FILE):
-        return {"investments": []}
+    try:
+        data = load_json(KEY) or []
+        return {"investments": data if isinstance(data, list) else []}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return {"investments": data}
+@router.get("/summary/")
+def investment_summary():
+    try:
+        data: List[Dict[str, Any]] = load_json(KEY) or []
+        summary: Dict[str, int] = {}
+        for it in data:
+            cat = (it.get("category") or "Other")
+            summary[cat] = summary.get(cat, 0) + 1
+        return {"summary": summary}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")
 
 @router.get("/risk-summary/")
 def risk_summary():
-    file_path = os.path.abspath("investments.json")
-    if not os.path.exists(file_path):
-        return {"summary": {}}
-
-    with open(file_path, encoding='utf-8') as f:
-        data = json.load(f)
-
-    summary = {"low": 0, "medium": 0, "high": 0}
-
-    for item in data:
-        risk = item.get("risk", "").lower()
-        if risk in summary:
-            summary[risk] += 1
-
-    return {"summary": summary}
-
-
+    try:
+        data: List[Dict[str, Any]] = load_json(KEY) or []
+        summary = {"low": 0, "medium": 0, "high": 0}
+        for it in data:
+            rk = (it.get("risk") or "").lower()
+            if rk in summary:
+                summary[rk] += 1
+        return {"summary": summary}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")

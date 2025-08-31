@@ -1,28 +1,26 @@
-from fastapi import APIRouter, Body
-import os
-import json
-from datetime import datetime
+from fastapi import APIRouter, HTTPException
+from typing import Any, Dict, List
+from somee_client import save_json, load_json
+
 router = APIRouter()
-
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../portfolio.json")
-@router.get("/")
-def get_portfolio():
-    return {"portfolio": []}
-
+KEY = "portfolio"
 
 @router.post("/")
-def add_portfolio(data: dict = Body(...)):
-    data["timestamp"] = datetime.now().isoformat()  # הוספת תאריך ושעה
+def add_portfolio(data: Dict[str, Any]):
+    try:
+        cur: List[Dict[str, Any]] = load_json(KEY) or []
+        if not isinstance(cur, list):
+            cur = []
+        cur.append(data)
+        save_json(KEY, cur)
+        return {"status": "saved", "portfolio": data}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")
 
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            existing = json.load(f)
-    else:
-        existing = []
-
-    existing.append(data)
-
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(existing, f, ensure_ascii=False, indent=2)
-
-    return {"status": "saved", "portfolio": data}
+@router.get("/")
+def get_portfolio():
+    try:
+        data = load_json(KEY) or []
+        return {"portfolio": data if isinstance(data, list) else []}
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Somee error: {e}")

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from core.gateway import ask_llm
+from gateway import ask_llm  # ← מתקן את ה-import שהיה ל-core.gateway
 
 router = APIRouter()
 

@@ -1,25 +1,16 @@
-import httpx
+import os, httpx
 from googletrans import Translator
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "phi3"
-
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "https://ollama-render-kwqx.onrender.com")
+MODEL_NAME  = os.getenv("OLLAMA_MODEL", "llama3")
+OLLAMA_URL  = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
 translator = Translator()
-
 async def call_ollama(prompt: str) -> str:
-    payload = {
-        "model": MODEL_NAME,
-        "prompt": prompt,
-        "stream": False
-    }
-    try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(OLLAMA_URL, json=payload)
-            response.raise_for_status()
-            result = response.json()
-            return result.get("response", "[No response]")
-    except Exception as e:
-        return f"[ERROR: {e}]"
+    payload = {"model": MODEL_NAME, "prompt": prompt, "stream": False}
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        r = await client.post(OLLAMA_URL, json=payload)
+        r.raise_for_status()
+        return r.json().get("response", "[No response]")
 
 async def ask_llm(question: str) -> str:
     print("🟣 שאלה שהוזנה:", question)

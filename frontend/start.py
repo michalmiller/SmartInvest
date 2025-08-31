@@ -16,6 +16,11 @@ def main():
     login.show()
     with open("modern.qss", "r", encoding="utf-8") as f:
          app.setStyleSheet(f.read())
+         try:
+              from dotenv import load_dotenv
+              load_dotenv()
+         except Exception:
+          pass
 
 
     sys.exit(app.exec())

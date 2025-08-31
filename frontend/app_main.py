@@ -1,47 +1,28 @@
-import sys
-from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QTabWidget,
-    QWidget, QVBoxLayout, QLabel
-)
-from AIchatWidget import AIChatWidget 
+# app_main.py
+from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+from AIchatWidget import AIchatWidget
 from invest_input_tab import InvestInputTab
 from investments_tab import InvestmentsTab
 from search_tab import SearchTab
 
-
-class SmartInvestApp(QMainWindow):
-    def __init__(self, user):
+class AppMain(QWidget):
+    def __init__(self):
         super().__init__()
-        self.user = user
-        self.setWindowTitle(f"SmartInvest – שלום {self.user['full_name']}")
-        self.setGeometry(100, 100, 1000, 700)
+        self.setWindowTitle("SmartInvest")
 
+        layout = QVBoxLayout(self)
         tabs = QTabWidget()
-        tabs.addTab(self.investments_tab(), "📊 השקעות נוכחיות")
-        tabs.addTab(self.input_tab(), "➕ הוספת השקעה")
-        tabs.addTab(self.ai_tab(), "🤖 יועץ AI")
-        tabs.addTab(self.search_tab(), "🔍 חיפוש נכסים")
-        self.setCentralWidget(tabs)
+        layout.addWidget(tabs)
 
-    def investments_tab(self):
-        return InvestmentsTab()
+        self.ai_tab = AIchatWidget()
+        self.input_tab = InvestInputTab()
+        self.list_tab = InvestmentsTab()
+        self.search_tab = SearchTab()
 
-    def input_tab(self):
-        return InvestInputTab()
+        tabs.addTab(self.ai_tab, "🤖 יועץ AI")
+        tabs.addTab(self.input_tab, "➕ הוספת השקעה")
+        tabs.addTab(self.list_tab, "📋 השקעות נוכחיות")
+        tabs.addTab(self.search_tab, "🔍 חיפוש")
 
-    def ai_tab(self):
-        return AIChatWidget()
-
-    def search_tab(self):
-        return SearchTab()
-
-
-
-    
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = SmartInvestApp()
-    window.show()
-    sys.exit(app.exec())
+        # ← חיבור: אחרי שמירה, לרענן את טבלת ההשקעות
+        self.input_tab.investment_saved.connect(self.list_tab.refresh_data)

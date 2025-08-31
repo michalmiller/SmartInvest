@@ -1,44 +1,44 @@
-# gui_app.py
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
+# AIchatWidget.py
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QMessageBox
 import requests
+from gui_config import RENDER_API
 
-class AIChatWidget(QWidget):
+class AIchatWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SmartInvest - שאל את המודל")  # לא חובה
-        self.setMinimumSize(600, 400)
+        layout = QVBoxLayout(self)
 
-        layout = QVBoxLayout()
+        layout.addWidget(QLabel("🤖 יועץ AI"))
+        self.q_edit = QTextEdit()
+        self.q_edit.setPlaceholderText("שאלי שאלה…")
+        layout.addWidget(self.q_edit)
 
-        self.label = QLabel("הזן את השאלה שלך:")
-        layout.addWidget(self.label)
+        self.ask_btn = QPushButton("שאלי")
+        self.ask_btn.clicked.connect(self.ask_model)
+        layout.addWidget(self.ask_btn)
 
-        self.input = QLineEdit()
-        layout.addWidget(self.input)
-
-        self.button = QPushButton("שאל")
-        self.button.clicked.connect(self.ask_model)
-        layout.addWidget(self.button)
-
-        self.result = QTextEdit()
-        self.result.setReadOnly(True)
-        layout.addWidget(self.result)
-
-        self.setLayout(layout)
+        layout.addWidget(QLabel("תשובה:"))
+        self.a_view = QTextEdit()
+        self.a_view.setReadOnly(True)
+        layout.addWidget(self.a_view)
 
     def ask_model(self):
-        question = self.input.text()
-        if not question.strip():
-            self.result.setPlainText("אנא הזן שאלה")
+        q = self.q_edit.toPlainText().strip()
+        if not q:
+            QMessageBox.information(self, "שימי לב", "נא להקליד שאלה.")
             return
 
+        self.ask_btn.setEnabled(False)
         try:
-            url = f"http://127.0.0.1:8000/ask/?question={question}"
-            response = requests.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                self.result.setPlainText(data.get("answer_he", "[לא התקבלה תשובה]"))
-            else:
-                self.result.setPlainText(f"שגיאה: {response.status_code}")
-        except Exception as e:
-            self.result.setPlainText(f"שגיאה בחיבור לשרת: {str(e)}")
+            url = f"{RENDER_API}/ask/"
+            r = requests.get(url, params={"question": q}, timeout=30)
+            if r.status_code != 200:
+                QMessageBox.warning(self, "שגיאה", f"שגיאה מהשרת ({r.status_code}).")
+                return
+            data = r.json() or {}
+            ans = data.get("answer_he") or data.get("answer") or ""
+            self.a_view.setPlainText(ans)
+        except requests.exceptions.RequestException as e:
+            QMessageBox.critical(self, "שגיאת רשת", str(e))
+        finally:
+            self.ask_btn.setEnabled(True)
