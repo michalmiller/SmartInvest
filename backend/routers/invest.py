@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from typing import Any, Dict, List
-from ..services.somee_client import save_json, load_json
+from backend.services.somee_client import save_json, load_json
 
  # קובץ השירות שלך ל-Somee
 

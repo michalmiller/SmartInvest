@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from ..services.somee_client import load_json
+from backend.services.somee_client import load_json
 
 
 router = APIRouter()
