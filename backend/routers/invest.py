@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from typing import Any, Dict, List
-from somee_client import save_json, load_json  # קובץ השירות שלך ל-Somee
+from ..services.somee_client import save_json, load_json
+
+ # קובץ השירות שלך ל-Somee
 
 router = APIRouter()
 KEY = "investments"  # ישמר כ-investments.json ב-Somee

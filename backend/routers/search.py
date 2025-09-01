@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query
-from somee_client import load_json
+from ..services.somee_client import load_json
+
 
 router = APIRouter()
 KEY = "investments"
