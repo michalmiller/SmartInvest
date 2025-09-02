@@ -1,32 +1,23 @@
 import os, httpx
-from googletrans import Translator
 
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "https://ollama-render-kwqx.onrender.com")
-MODEL_NAME  = os.getenv("OLLAMA_MODEL", "llama3")
-OLLAMA_URL  = f"{OLLAMA_HOST.rstrip('/')}/api/generate"
-translator = Translator()
-async def call_ollama(prompt: str) -> str:
-    payload = {"model": MODEL_NAME, "prompt": prompt, "stream": False}
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        r = await client.post(OLLAMA_URL, json=payload)
-        r.raise_for_status()
-        return r.json().get("response", "[No response]")
+
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
 async def ask_llm(question: str) -> str:
-    print("🟣 שאלה שהוזנה:", question)
+    prompt = f"ענה בעברית: {question}"
 
-    # תרגום מעברית לאנגלית
-    #translated = translator.translate(question, src='he', dest='en')
-   # translated_question = translated.text
-    # print("🟠 שאלה מתורגמת:", translated_question)
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False
+    }
 
-    # קריאה למודל
-    response_en = await call_ollama(question)
-    print("🟢 תשובה באנגלית:", response_en)
-
-    # תרגום חזרה לעברית
-    #translated = translator.translate(response_en, src='en', dest='he')
-    #translated_answer = translated.text
-    #print("🔵 תשובה מתורגמת לעברית:", response_en)
-
-    return response_en
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        try:
+            response =  client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
+            response.raise_for_status()
+            data = response.json()
+            return data.get("response", "").strip()
+        except Exception as e:
+            return f"שגיאה בתשובה: {e}"
