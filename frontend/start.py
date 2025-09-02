@@ -1,14 +1,14 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from login_window import LoginWindow
-from app_main import SmartInvestApp  
+from app_main import AppMain 
 def main():
     app = QApplication(sys.argv)
     main_window = None
 
     def open_main_app(user):
             global main_window
-            main_window = SmartInvestApp(user)
+            main_window = AppMain(user)
             main_window.show()
 
 

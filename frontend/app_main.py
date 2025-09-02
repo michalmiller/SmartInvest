@@ -6,9 +6,16 @@ from investments_tab import InvestmentsTab
 from search_tab import SearchTab
 
 class AppMain(QWidget):
-    def __init__(self):
+    def __init__(self, user=None):   # ← היה: def __init__(self):
         super().__init__()
-        self.setWindowTitle("SmartInvest")
+        self.user = user
+
+        # כותרת חלון עם שם המשתמש אם קיים
+        display_name = ""
+        if isinstance(user, dict):
+            display_name = user.get("full_name") or user.get("username") or ""
+        title = "SmartInvest" if not display_name else f"SmartInvest – שלום, {display_name}"
+        self.setWindowTitle(title)
 
         layout = QVBoxLayout(self)
         tabs = QTabWidget()
@@ -24,5 +31,8 @@ class AppMain(QWidget):
         tabs.addTab(self.list_tab, "📋 השקעות נוכחיות")
         tabs.addTab(self.search_tab, "🔍 חיפוש")
 
-        # ← חיבור: אחרי שמירה, לרענן את טבלת ההשקעות
-        self.input_tab.investment_saved.connect(self.list_tab.refresh_data)
+        # אם הגדרת קודם רענון אוטומטי אחרי שמירה:
+        try:
+            self.input_tab.investment_saved.connect(self.list_tab.refresh_data)
+        except Exception:
+            pass

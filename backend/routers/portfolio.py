@@ -22,6 +22,6 @@ def add_portfolio(data: Dict[str, Any]):
 def get_portfolio():
     try:
         data = load_json(KEY) or []
-        return {"portfolio": data if isinstance(data, list) else []}
+        return data if isinstance(data, list) else []
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Somee error: {e}")

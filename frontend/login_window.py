@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Callable, Any
 from PySide6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QVBoxLayout, QMessageBox
@@ -7,7 +8,7 @@ from PySide6.QtWidgets import (
 
 
 class LoginWindow(QWidget):
-    def __init__(self, on_login_success):
+    def __init__(self, on_login_success: Callable[[Any], None]):
         super().__init__()
         self.on_login_success = on_login_success
         self.setWindowTitle("התחברות למערכת")
