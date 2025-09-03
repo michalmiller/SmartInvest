@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QMessageBox
 import requests
 from gui_config import RENDER_API
-
+import json
 # הגדרה ידנית של כתובת השרת עבור אולמה בלבד
 RENDER_API_OLAMA = "http://localhost:11434"
 
@@ -53,7 +53,7 @@ class AIchatWidget(QWidget):
             for line in res.iter_lines():
                 if line:
                     try:
-                        data = requests.utils.json.loads(line.decode())
+                        data = json.loads(line.decode())
                         answer += data.get("response", "")
                     except Exception:
                         continue
