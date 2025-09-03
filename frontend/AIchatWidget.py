@@ -40,7 +40,7 @@ class AIchatWidget(QWidget):
         try:
             url = f"{RENDER_API_OLAMA}/api/generate"
             payload = {
-                "model": "tinyllama",  # שנה לשם המודל שלך אם צריך
+                "model": "phi3",  # שנה לשם המודל שלך אם צריך
                 "prompt": q
             }
             res = requests.post(url, json=payload, timeout=60, stream=True)
@@ -66,4 +66,4 @@ class AIchatWidget(QWidget):
             self.a_view.setPlainText(f"שגיאה כללית: {e}")
         finally:
             self.ask_btn.setEnabled(True)
-# ...existing code...
+# ...existing code...ollama list
