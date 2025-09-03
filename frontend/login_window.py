@@ -45,7 +45,7 @@ class LoginWindow(QWidget):
             QMessageBox.critical(self, "שגיאה", "שם משתמש או סיסמה שגויים")
 
     def validate_user(self, username, password):
-        path = os.path.abspath("portfolio.json")
+        path =("C:\Users\מיכל מילר\Desktop\smartinvest\backend\storage\portfolio.json")
         print(f"🔍 קוראת מתוך: {path}")
 
         if not os.path.exists(path):
