@@ -7,6 +7,7 @@ SOMEE_BASE = os.getenv("SOMEE_BASE", "").rstrip("/")
 # או להגדיר אותו כערך ריק אם אין צורך
 
 SOMEE_API_KEY = os.getenv("SOMEE_API_KEY", "")
+print(f"SOMEE_API_KEY: {SOMEE_API_KEY}")  # הדפסת הערך
 
 def _must_cfg():
     if not SOMEE_BASE or not SOMEE_API_KEY:
