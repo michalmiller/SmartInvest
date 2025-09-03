@@ -35,10 +35,11 @@ class InvestmentsTab(QWidget):
 
         self.load_data()
 
+# ...existing code...
     def load_data(self):
-        """טוען נתוני השקעות מה-API."""
+        """טוען נתוני השקעות מ-Somee (קובץ JSON סטטי)."""
         try:
-            res = requests.get(f"{RENDER_API}/invest/", timeout=10)
+            res = requests.get("http://www.michalinvest.somee.com/investments.json", timeout=10)
             print(f"📡 Status: {res.status_code}")
             print(f"🔍 Response: {res.text}")
 
@@ -47,8 +48,7 @@ class InvestmentsTab(QWidget):
                 self.clear_graphs()
                 return
 
-            payload = res.json()
-            data = payload.get("investments", [])
+            data = res.json()  # אם הקובץ הוא רשימה של השקעות
             if not isinstance(data, list):
                 data = []
 
@@ -63,7 +63,7 @@ class InvestmentsTab(QWidget):
             print(f"💥 שגיאה בטעינה: {e}")
             self.table.setRowCount(0)
             self.clear_graphs()
-
+# ...existing code...
     def populate_table(self, data):
         self.table.setRowCount(len(data))
         for row, item in enumerate(data):
