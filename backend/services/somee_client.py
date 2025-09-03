@@ -23,12 +23,9 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
     return {"ok": True}
 
 def load_json(key: str) -> Any:
-    _must_cfg()
-    r = requests.get(f"{SOMEE_BASE}/{key}.json", timeout=10)
-    if r.status_code == 404:
-        return []
-    r.raise_for_status()
     try:
-        return r.json()
-    except Exception:
+        with open(f"backend/data/{key}.json", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"⚠️ שגיאה בקריאת {key}.json: {e}")
         return []
