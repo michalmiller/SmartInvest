@@ -39,7 +39,7 @@ class InvestmentsTab(QWidget):
     def load_data(self):
         """טוען נתוני השקעות מ-Somee (קובץ JSON סטטי)."""
         try:
-            res = requests.get("http://www.michalinvest.somee.com/investments.json", timeout=10)
+            res = requests.get("http://www.michalmiller.somee.com/investments.json", timeout=60)
             print(f"📡 Status: {res.status_code}")
             print(f"🔍 Response: {res.text}")
 
