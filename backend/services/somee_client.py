@@ -3,7 +3,7 @@ import os, requests, json
 from typing import Any, Dict
 
 SOMEE_BASE = os.getenv("SOMEE_BASE", "").rstrip("/")
-SOMEE_API_KEY = os.getenv("SOMEE_API_KEY", "")
+SOMEE_API_KEY = os.getenv("your-secret-api-key", "")
 
 def _must_cfg():
     if not SOMEE_BASE or not SOMEE_API_KEY:
