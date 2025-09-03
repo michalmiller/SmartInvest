@@ -24,7 +24,7 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
 
 def load_json(key: str) -> Any:
     _must_cfg()
-    r = requests.get(f"{SOMEE_BASE}/{key}.json", timeout=10)
+    r = requests.get(f"{SOMEE_BASE}/{key}.txt", timeout=10)
     if r.status_code == 404:
         return []
     r.raise_for_status()
