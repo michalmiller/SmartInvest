@@ -22,23 +22,17 @@ class AIchatWidget(QWidget):
         self.a_view.setReadOnly(True)
         layout.addWidget(self.a_view)
 
-    def ask_model(self):
-        q = self.q_edit.toPlainText().strip()
-        if not q:
-            QMessageBox.information(self, "שימי לב", "נא להקליד שאלה.")
-            return
+def send_prompt(self):
+    user_input = self.input_box.toPlainText().strip()
+    if not user_input:
+        return
 
-        self.ask_btn.setEnabled(False)
-        try:
-            url = f"{RENDER_API}/ask/"
-            r = requests.get(url, params={"question": q}, timeout=30)
-            if r.status_code != 200:
-                QMessageBox.warning(self, "שגיאה", f"שגיאה מהשרת ({r.status_code}).")
-                return
-            data = r.json() or {}
-            ans = data.get("answer_he") or data.get("answer") or ""
-            self.a_view.setPlainText(ans)
-        except requests.exceptions.RequestException as e:
-            QMessageBox.critical(self, "שגיאת רשת", str(e))
-        finally:
-            self.ask_btn.setEnabled(True)
+    self.output_box.setPlainText("⏳ חושב...")
+
+    try:
+        res = requests.post(f"{RENDER_API}/ask", json={"prompt": user_input})
+        res.raise_for_status()
+        answer = res.json().get("answer", "❓ לא התקבלה תשובה.")
+        self.output_box.setPlainText(answer)
+    except Exception as e:
+        self.output_box.setPlainText(f"שגיאה בתשובה: {e}")
