@@ -28,7 +28,7 @@ if ($data === null) {
     exit;
 }
 
-$file = $_GET['key'] . ".json";
+$file = $_GET['ke";
 file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 echo json_encode(["ok" => true, "saved" => $file]);

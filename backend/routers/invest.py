@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Any, Dict, List
-from backend.services.somee_client import save_json, load_json
+from backend.services.local_storage import save_json, load_json
+
 
  # קובץ השירות שלך ל-Somee
 
@@ -10,7 +11,7 @@ KEY = "investments"  # ישמר כ-investments.json ב-Somee
 @router.post("/")
 def add_investment(data: Dict[str, Any]):
     try:
-        cur: List[Dict[str, Any]] = load_json(KEY) or []
+        cur: List[Dict[str, Any]] = load_json(KEY)
         if not isinstance(cur, list):
             cur = []
         cur.append(data)
