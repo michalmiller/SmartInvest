@@ -6,4 +6,4 @@ try:
 except Exception:
     pass
 
-RENDER_API = os.getenv("RENDER_API", "https://michalinvest.onrender.com").rstrip("/")
+RENDER_API = os.getenv("RENDER_API", "https://smartinvest-ms9n.onrender.com").rstrip("/")
