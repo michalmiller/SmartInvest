@@ -24,7 +24,7 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
 
 def load_json(key: str) -> Any:
     try:
-        with open(f"backend/data/{key}.json", encoding="utf-8") as f:
+        with open(f"backend/storage/{key}.json", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         print(f"⚠️ שגיאה בקריאת {key}.json: {e}")
