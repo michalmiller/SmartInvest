@@ -1,8 +1,3 @@
-# AIchatWidget.py
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QMessageBox
-import requests
-from gui_config import RENDER_API
-
 class AIchatWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -22,31 +17,30 @@ class AIchatWidget(QWidget):
         self.a_view.setReadOnly(True)
         layout.addWidget(self.a_view)
 
-def ask_model(self):
-    q = self.q_edit.toPlainText().strip()
-    if not q:
-        QMessageBox.information(self, "שימי לב", "נא להקליד שאלה.")
-        return
-
-    self.ask_btn.setEnabled(False)
-    self.a_view.setPlainText("⏳ שואלת את המודל...")
-
-    try:
-        url = f"{RENDER_API}/ask/"
-        res = requests.get(url, params={"question": q}, timeout=30)
-
-        if res.status_code != 200:
-            self.a_view.setPlainText(f"שגיאה ({res.status_code}) מהשרת.")
+    def ask_model(self):  # ← הזחה נכונה!
+        q = self.q_edit.toPlainText().strip()
+        if not q:
+            QMessageBox.information(self, "שימי לב", "נא להקליד שאלה.")
             return
 
-        data = res.json()
-        answer = data.get("answer_he") or data.get("answer") or "❓ לא התקבלה תשובה."
-        self.a_view.setPlainText(answer)
+        self.ask_btn.setEnabled(False)
+        self.a_view.setPlainText("⏳ שואלת את המודל...")
 
-    except requests.exceptions.RequestException as e:
-        self.a_view.setPlainText(f"שגיאת רשת: {e}")
-    except Exception as e:
-        self.a_view.setPlainText(f"שגיאה כללית: {e}")
-    finally:
-        self.ask_btn.setEnabled(True)
+        try:
+            url = f"{RENDER_API}/ask/"
+            res = requests.get(url, params={"question": q}, timeout=30)
 
+            if res.status_code != 200:
+                self.a_view.setPlainText(f"שגיאה ({res.status_code}) מהשרת.")
+                return
+
+            data = res.json()
+            answer = data.get("answer_he") or data.get("answer") or "❓ לא התקבלה תשובה."
+            self.a_view.setPlainText(answer)
+
+        except requests.exceptions.RequestException as e:
+            self.a_view.setPlainText(f"שגיאת רשת: {e}")
+        except Exception as e:
+            self.a_view.setPlainText(f"שגיאה כללית: {e}")
+        finally:
+            self.ask_btn.setEnabled(True)
