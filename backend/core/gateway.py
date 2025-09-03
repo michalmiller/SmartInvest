@@ -15,7 +15,7 @@ async def ask_llm(question: str) -> str:
 
     async with httpx.AsyncClient(timeout=60.0) as client:
         try:
-            response =  client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
+            response = await client.post(f"{OLLAMA_HOST}/api/generate", json=payload)
             response.raise_for_status()
             data = response.json()
             return data.get("response", "").strip()
