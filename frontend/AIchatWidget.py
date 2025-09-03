@@ -22,17 +22,31 @@ class AIchatWidget(QWidget):
         self.a_view.setReadOnly(True)
         layout.addWidget(self.a_view)
 
-def send_prompt(self):
-    user_input = self.input_box.toPlainText().strip()
-    if not user_input:
+def ask_model(self):
+    q = self.q_edit.toPlainText().strip()
+    if not q:
+        QMessageBox.information(self, "שימי לב", "נא להקליד שאלה.")
         return
 
-    self.output_box.setPlainText("⏳ חושב...")
+    self.ask_btn.setEnabled(False)
+    self.a_view.setPlainText("⏳ שואלת את המודל...")
 
     try:
-        res = requests.post(f"{RENDER_API}/ask", json={"prompt": user_input})
-        res.raise_for_status()
-        answer = res.json().get("answer", "❓ לא התקבלה תשובה.")
-        self.output_box.setPlainText(answer)
+        url = f"{RENDER_API}/ask/"
+        res = requests.get(url, params={"question": q}, timeout=30)
+
+        if res.status_code != 200:
+            self.a_view.setPlainText(f"שגיאה ({res.status_code}) מהשרת.")
+            return
+
+        data = res.json()
+        answer = data.get("answer_he") or data.get("answer") or "❓ לא התקבלה תשובה."
+        self.a_view.setPlainText(answer)
+
+    except requests.exceptions.RequestException as e:
+        self.a_view.setPlainText(f"שגיאת רשת: {e}")
     except Exception as e:
-        self.output_box.setPlainText(f"שגיאה בתשובה: {e}")
+        self.a_view.setPlainText(f"שגיאה כללית: {e}")
+    finally:
+        self.ask_btn.setEnabled(True)
+
