@@ -26,6 +26,8 @@ class AIchatWidget(QWidget):
 
    # ...existing code...
 
+    # ...existing code...
+
     def ask_model(self):
         q = self.q_edit.toPlainText().strip()
         if not q:
@@ -38,18 +40,25 @@ class AIchatWidget(QWidget):
         try:
             url = f"{RENDER_API_OLAMA}/api/generate"
             payload = {
-                "model": "llama3",  # שנה לשם המודל שלך אם צריך
+                "model": "tinyllama",  # שנה לשם המודל שלך אם צריך
                 "prompt": q
             }
-            res = requests.post(url, json=payload, timeout=60)
+            res = requests.post(url, json=payload, timeout=60, stream=True)
 
             if res.status_code != 200:
                 self.a_view.setPlainText(f"שגיאה ({res.status_code}) מהשרת.")
                 return
 
-            data = res.json()
-            answer = data.get("response") or "❓ לא התקבלה תשובה."
-            self.a_view.setPlainText(answer)
+            answer = ""
+            for line in res.iter_lines():
+                if line:
+                    try:
+                        data = requests.utils.json.loads(line.decode())
+                        answer += data.get("response", "")
+                    except Exception:
+                        continue
+
+            self.a_view.setPlainText(answer or "❓ לא התקבלה תשובה.")
 
         except requests.exceptions.RequestException as e:
             self.a_view.setPlainText(f"שגיאת רשת: {e}")
