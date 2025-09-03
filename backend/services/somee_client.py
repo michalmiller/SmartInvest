@@ -24,7 +24,7 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
 
 def load_json(key: str):
     try:
-        path = os.path.join("backend", "data", f"{key}.json")
+        path = os.path.join("backend", "storage", f"{key}.json")
         print(f"📂 מנסה לטעון: {path}")
         if not os.path.exists(path):
             print("❌ הקובץ לא קיים")
