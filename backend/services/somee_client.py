@@ -22,10 +22,15 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
         return r.json()
     return {"ok": True}
 
-def load_json(key: str) -> Any:
+def load_json(key: str):
     try:
-        with open(f"backend/storage/{key}.json", encoding="utf-8") as f:
+        path = os.path.join("backend", "data", f"{key}.json")
+        print(f"📂 מנסה לטעון: {path}")
+        if not os.path.exists(path):
+            print("❌ הקובץ לא קיים")
+            return []
+        with open(path, encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        print(f"⚠️ שגיאה בקריאת {key}.json: {e}")
+        print(f"💥 שגיאה ב-load_json: {e}")
         return []
