@@ -1,0 +1,62 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    command: serve
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ollama-setup:
+    image: ollama/ollama:latest
+    container_name: ollama-model-setup
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: >
+      sh -c "
+        echo 'Waiting for Ollama to be ready...';
+        sleep 10;
+        echo 'Pulling model...';
+        ollama pull llama3.2:1b || ollama pull tinyllama;
+        echo 'Model ready!';
+      "
+    networks:
+      - app-network
+
+  fastapi:
+    build: ./backend
+    container_name: fastapi-server
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - DATABASE_URL=your_somee_connection_string
+    depends_on:
+      - ollama
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+
+volumes:
+  ollama_data:
+
+networks:
+  app-network:
+    driver: bridge
