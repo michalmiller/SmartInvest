@@ -1,3 +1,13 @@
+
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QMessageBox
+import requests
+
+# אם יש לך משתנה RENDER_API, ודא שהוא מוגדר כאן או יובא ממקום אחר
+from gui_config import RENDER_API
+
+
+
+
 class AIchatWidget(QWidget):
     def __init__(self):
         super().__init__()
