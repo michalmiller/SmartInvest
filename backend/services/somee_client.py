@@ -3,7 +3,10 @@ import os, requests, json
 from typing import Any, Dict
 
 SOMEE_BASE = os.getenv("SOMEE_BASE", "").rstrip("/")
-SOMEE_API_KEY = os.getenv("your-secret-api-key", "")
+# במקום לבדוק אם SOMEE_API_KEY קיים, אפשר פשוט לא להשתמש בו
+# או להגדיר אותו כערך ריק אם אין צורך
+
+SOMEE_API_KEY = os.getenv("SOMEE_API_KEY", "")
 
 def _must_cfg():
     if not SOMEE_BASE or not SOMEE_API_KEY:
