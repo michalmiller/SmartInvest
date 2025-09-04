@@ -26,15 +26,23 @@ def save_json(key: str, data: Any) -> Dict[str, Any]:
         return r.json()
     return {"ok": True}
 
-def load_json(key: str):
+def load_json(key: str) -> Union[Any, None]:
+    """טעינת JSON מ-Somee"""
     try:
-        path = os.path.join("backend", "storage", f"{key}.json")
-        print(f"📂 מנסה לטעון: {path}")
-        if not os.path.exists(path):
-            print("❌ הקובץ לא קיים")
-            return []
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
+        # לטעינה, נשתמש בקובץ שנשמר
+        url = f"{SOMEE_BASE}/{key}.json"
+        
+        response = requests.get(url, timeout=30)
+        
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 404:
+            # קובץ לא קיים - זה בסדר, נחזיר None
+            return None
+        else:
+            print(f"Somee load error: {response.status_code} - {response.text}")
+            return None
+            
     except Exception as e:
-        print(f"💥 שגיאה ב-load_json: {e}")
-        return []
+        print(f"Error loading from Somee: {e}")
+        return None
