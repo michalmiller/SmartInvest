@@ -1,30 +1,40 @@
-# somee_client.py
-import os, requests, json
-from typing import Any, Dict, Union
+import requests
+import os
+from typing import Any, Dict, List, Union
 
-SOMEE_BASE = os.getenv("SOMEE_BASE", "").rstrip("/")
-# במקום לבדוק אם SOMEE_API_KEY קיים, אפשר פשוט לא להשתמש בו
-# או להגדיר אותו כערך ריק אם אין צורך
+# הגדרות מקובץ .env
+SOMEE_BASE = os.getenv("SOMEE_BASE", "http://www.michalmiller.somee.com")
+SOMEE_API_KEY = os.getenv("SOMEE_API_KEY", "InvestApp_Secure_789_Key")
 
-SOMEE_API_KEY = os.getenv("SOMEE_API_KEY", "")
-print(f"SOMEE_API_KEY: {SOMEE_API_KEY}")  # הדפסת הערך
-
-def _must_cfg():
-    if not SOMEE_BASE or not SOMEE_API_KEY:
-        raise RuntimeError("SOMEE_BASE / SOMEE_API_KEY are not set")
-
-def save_json(key: str, data: Any) -> Dict[str, Any]:
-    _must_cfg()
-    r = requests.post(
-        f"{SOMEE_BASE}/upload.php",
-        params={"key": key, "api_key": SOMEE_API_KEY},
-        json=data,
-        timeout=15
-    )
-    r.raise_for_status()
-    if r.headers.get("content-type","").startswith("application/json"):
-        return r.json()
-    return {"ok": True}
+def save_json(key: str, data: Any) -> bool:
+    """שמירת JSON ב-Somee באמצעות POST"""
+    try:
+        # בנית ה-URL עם הפרמטרים ישירות
+        url = f"{SOMEE_BASE}/upload.php?key={key}&api_key={SOMEE_API_KEY}"
+        
+        # שליחת POST request עם הנתונים ב-body
+        response = requests.post(
+            url,
+            data=str(data).encode('utf-8') if isinstance(data, dict) else str(data).encode('utf-8'),
+            headers={"Content-Type": "application/json"},
+            timeout=30
+        )
+        
+        print(f"Request method: POST")
+        print(f"URL: {url}")
+        print(f"Status: {response.status_code}")
+        print(f"Response: {response.text}")
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("ok", False)
+        else:
+            print(f"Somee save error: {response.status_code} - {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"Error saving to Somee: {e}")
+        return False
 
 def load_json(key: str) -> Union[Any, None]:
     """טעינת JSON מ-Somee"""
