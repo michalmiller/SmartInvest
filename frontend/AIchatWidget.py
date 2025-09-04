@@ -41,7 +41,7 @@ class AIchatWidget(QWidget):
             url = f"{RENDER_API_OLAMA}/api/generate"
             payload = {
                 "model": "tinyllama",  # שנה לשם המודל שלך אם צריך
-                "prompt": f"ענה בעברית: {q}"
+                "prompt":q
             }
             res = requests.post(url, json=payload, timeout=60, stream=True)
 
