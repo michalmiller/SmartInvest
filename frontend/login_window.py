@@ -16,11 +16,11 @@ class LoginWindow(QWidget):
         self.setWindowTitle("התחברות למערכת")
         self.setFixedSize(300, 200)
         # לדוג' בקובץ הראשי או בכל חלון שתרצי
-        logo = QLabel()
-        logo.setPixmap(QPixmap("logo_temp.jpg").scaled(60, 60))
-        logo.setObjectName("AppLogo")
+        self.logo = QLabel()
+        self.logo.setPixmap(QPixmap("logo_temp.jpg").scaled(60, 60))
+        self.logo.setObjectName("AppLogo")
         layout = QVBoxLayout()
-        layout.addWidget(logo, alignment=Qt.AlignLeft | Qt.AlignTop)
+        layout.addWidget(self.logo, alignment=Qt.AlignLeft | Qt.AlignTop)
 
         layout = QVBoxLayout()
 

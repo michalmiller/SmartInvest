@@ -1,13 +1,13 @@
-# app_main.py
-from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
 from AIchatWidget import AIchatWidget
-
 from invest_input_tab import InvestInputTab
 from investments_tab import InvestmentsTab
 from search_tab import SearchTab
 
 class AppMain(QWidget):
-    def __init__(self, user=None):   # ← היה: def __init__(self):
+    def __init__(self, user=None):
         super().__init__()
         self.user = user
 
@@ -18,9 +18,22 @@ class AppMain(QWidget):
         title = "SmartInvest" if not display_name else f"SmartInvest – שלום, {display_name}"
         self.setWindowTitle(title)
 
-        layout = QVBoxLayout(self)
+        # יצירת layout ראשי אופקי
+        main_layout = QVBoxLayout(self)
+
+        # שורת לוגו בראש החלון
+        logo_row = QHBoxLayout()
+        logo = QLabel()
+        logo.setPixmap(QPixmap("logo_temp.jpg"))
+        logo.setFixedSize(60, 60)
+        logo.setScaledContents(True)
+        logo.setObjectName("AppLogo")
+        logo_row.addWidget(logo, alignment=Qt.AlignLeft | Qt.AlignTop)
+        logo_row.addStretch()
+        main_layout.addLayout(logo_row)
+        # שאר התוכן
         tabs = QTabWidget()
-        layout.addWidget(tabs)
+        main_layout.addWidget(tabs)
 
         self.ai_tab = AIchatWidget()
         self.input_tab = InvestInputTab()
@@ -32,7 +45,6 @@ class AppMain(QWidget):
         tabs.addTab(self.list_tab, "📋 השקעות נוכחיות")
         tabs.addTab(self.search_tab, "🔍 חיפוש")
 
-        # אם הגדרת קודם רענון אוטומטי אחרי שמירה:
         try:
             self.input_tab.investment_saved.connect(self.list_tab.refresh_data)
         except Exception:
