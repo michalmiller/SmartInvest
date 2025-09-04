@@ -1,6 +1,7 @@
 # app_main.py
 from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from AIchatWidget import AIchatWidget
+
 from invest_input_tab import InvestInputTab
 from investments_tab import InvestmentsTab
 from search_tab import SearchTab

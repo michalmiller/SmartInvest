@@ -1,9 +1,21 @@
-/* רקע לבן וטקסט אפור כהה */
+
+/* רקע לבן וטקסט אפור כהה + תמונת רקע */
 QWidget {
     background-color: #ffffff;
     font-family: 'Segoe UI', sans-serif;
     font-size: 14px;
     color: #333333;
+}
+
+/* לוגו קטן בצד שמאל למעלה */
+QLabel#AppLogo {
+    background: transparent;
+    margin-left: 12px;
+    margin-top: 12px;
+    min-width: 60px;
+    min-height: 60px;
+    max-width: 60px;
+    max-height: 60px;
 }
 
 /* כפתור כחול מעוגל */

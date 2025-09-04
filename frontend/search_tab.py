@@ -6,7 +6,6 @@ from PySide6.QtWidgets import (
 import requests
 from gui_config import RENDER_API
 
-
 class SearchTab(QWidget):
     def __init__(self):
         super().__init__()

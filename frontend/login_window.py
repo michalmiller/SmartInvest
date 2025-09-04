@@ -5,7 +5,9 @@ from PySide6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton,
     QVBoxLayout, QMessageBox
 )
-
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
+import requests
 
 class LoginWindow(QWidget):
     def __init__(self, on_login_success: Callable[[Any], None]):
@@ -13,6 +15,12 @@ class LoginWindow(QWidget):
         self.on_login_success = on_login_success
         self.setWindowTitle("התחברות למערכת")
         self.setFixedSize(300, 200)
+        # לדוג' בקובץ הראשי או בכל חלון שתרצי
+        logo = QLabel()
+        logo.setPixmap(QPixmap("logo_temp.jpg").scaled(60, 60))
+        logo.setObjectName("AppLogo")
+        layout = QVBoxLayout()
+        layout.addWidget(logo, alignment=Qt.AlignLeft | Qt.AlignTop)
 
         layout = QVBoxLayout()
 
@@ -45,24 +53,30 @@ class LoginWindow(QWidget):
             QMessageBox.critical(self, "שגיאה", "שם משתמש או סיסמה שגויים")
 
     def validate_user(self, username, password):
-        path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "storage", "portfolio.json"))
-        print(f"🔍 קוראת מתוך: {path}")
-        print(f"🔍 קוראת מתוך: {path}")
+        url = "http://www.michalmiller.somee.com/portfolio.json"
+        try:
+            response = requests.get(url, timeout=10)
+            print(f"🔍 קוראת מתוך: {url}")
 
-        if not os.path.exists(path):
-            print("❌ הקובץ לא קיים")
+            if response.status_code != 200:
+                print("❌ שגיאה בטעינה מהשרת:", response.status_code)
+                return None
+
+            data = response.json()
+            print("📄 תוכן הקובץ:", data)
+
+            # בדיקת המשתמשים מהשרת
+            for user in data:
+                print(f"בודקת: {user}")
+                if user.get("username") == username and user.get("password") == password:
+                    print("✅ משתמש תקף")
+                    return user
+
+            print("🚫 התחברות נכשלה")
             return None
 
-        with open(path, encoding="utf-8") as f:
-            users = json.load(f)
+        except Exception as e:
+            print(f"❌ שגיאה כללית: {e}")
+            return None
 
-        print("📄 תוכן הקובץ:", users)
 
-        for user in users:
-            print(f"בודקת: {user}")
-            if user["username"] == username and user["password"] == password:
-                print("✅ משתמש תקף")
-                return user
-
-        print("🚫 התחברות נכשלה")
-        return None

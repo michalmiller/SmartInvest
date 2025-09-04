@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTextEdit, QPushButton, QMessageBox
 import requests
+
 from gui_config import RENDER_API
 import json
 # הגדרה ידנית של כתובת השרת עבור אולמה בלבד
