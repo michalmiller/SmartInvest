@@ -19,8 +19,8 @@ if (!$key || !$apiKey) {
     exit;
 }
 
-// אימות מפתח API (אפשר גם להגדיר אותו כאן קבוע אם אין ENV)
-$expectedKey = "your-secret-api-key"; // ← תחליפי למפתח שלך
+// אימות מפתח API - שני חזרתי את הקוד
+$expectedKey = "InvestApp_Secure_789_Key"; // המפתח החדש שלך
 if ($apiKey !== $expectedKey) {
     http_response_code(403);
     echo json_encode(["error" => "Invalid API key"]);
