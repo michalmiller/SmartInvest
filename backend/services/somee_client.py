@@ -1,6 +1,6 @@
 # somee_client.py
 import os, requests, json
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 SOMEE_BASE = os.getenv("SOMEE_BASE", "").rstrip("/")
 # במקום לבדוק אם SOMEE_API_KEY קיים, אפשר פשוט לא להשתמש בו
